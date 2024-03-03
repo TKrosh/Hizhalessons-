@@ -175,7 +175,7 @@ int main()
     }
     find_max_world(start);
     save(start);
-    //check(start);
+    check(start);
     clean(start);
     return 0;
 };
