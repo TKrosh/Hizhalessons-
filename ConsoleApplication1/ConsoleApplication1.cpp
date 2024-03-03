@@ -74,10 +74,8 @@ int input(char* fname, list** start)
 
 void mark(list* start, list* stop)
 {
-     //printf("!%c-%c! ", stop->elem, start->elem);
      while (start->next != stop->next)
      {
-        
         stop->write = 0;
         stop = stop->prev;
      }
@@ -98,13 +96,31 @@ list find_word_begin(list* t)
     return *s->next;
 }
 
+void save(list* start)
+{
+    FILE* file2;
+    fopen_s(&file2, "output.txt", "w");
 
+    while (start->elem != '.')
+    {
+        if (start->write == 1)
+        {
+            fprintf(file2, "%c", start->elem);
+        }
+        if (start->write == 2)
+        {
+            fprintf(file2, "%c", ' ');
+        }
+        start = start->next;
+    };
+    fclose(file2);
+}
 
 void find_max_world(list* start)
 {
     int max = -1, amount_letters_now = 0; //переменные хранящие значение длины прошлого и нынешнего слов
     list* n = start;
-    list* a = n;
+    list* a = start;
     list* nowworld = new list;
 
      while (n->next != NULL)
@@ -114,24 +130,20 @@ void find_max_world(list* start)
         {
             n->write = 2;
             *nowworld = find_word_begin(n);
-
             if (amount_letters_now > max)
             {
                 mark(a, nowworld);
                 list* a = nowworld;
                 max = amount_letters_now;
             }
-
             if (amount_letters_now < max)
             {
                 mark(nowworld, n);
-
             }
-            amount_letters_now = 1;
+            amount_letters_now = 0;
         }
         else
         {
-            
             amount_letters_now++;
         }
         n = n->next;
@@ -141,15 +153,14 @@ void find_max_world(list* start)
      *nowworld = find_word_begin(n);
      if (amount_letters_now > max)
      {
+         mark(a, nowworld);
+         list* a = nowworld;
          max = amount_letters_now;
-         mark(start, nowworld);
      }
-
      if (amount_letters_now < max)
      {
          mark(nowworld, n);
      }
-     amount_letters_now = 1;
 }
 
 int main()
@@ -163,7 +174,8 @@ int main()
         return -1;
     }
     find_max_world(start);
-    check(start);
+    save(start);
+    //check(start);
     clean(start);
     return 0;
 };
